@@ -40,27 +40,30 @@
 
 Mat 是 OpenCV 中最核心的数据结构，用于存储图像和矩阵。
 
-```cpp
-#include <opencv2/core.hpp>
+```python
+# ============================================
+# Python Mat - 多维密集数组
+# ============================================
+import cv2
+import numpy as np
 
-// 创建图像
-Mat img(480, 640, CV_8UC3);              // 480行 x 640列, 3通道 uint8_t
-Mat img2(Size(640, 480), CV_8UC3);       // 使用 Size 的同样效果
+# 创建图像 (rows × cols × channels)
+img = np.zeros((480, 640, 3), dtype=np.uint8)  # 480行 x 640列, 3通道
 
-// 从文件加载图像
-Mat img = imread("photo.jpg", IMREAD_COLOR);
+# 从文件加载图像
+img = cv2.imread("photo.jpg", cv2.IMREAD_COLOR)
 
-// 基本属性
-img.rows;           // 行数 (高度)
-img.cols;           // 列数 (宽度)
-img.channels();      // 通道数 (BGR为3)
-img.depth();         // 深度标识符 (CV_8U = 0)
-img.type();          // 类型标识符 (CV_8UC3 = 16)
-img.step;            // 每行字节数
-img.data;           // 原始数据指针 (uchar*)
-img.isContinuous(); // 内存是否连续
-img.total();        // 元素总数 = rows × cols
-img.elemSize();     // 每个元素的字节数
+# 基本属性
+img.shape      # 高度, 宽度, 通道数 (480, 640, 3)
+img.dtype      # uint8
+img.size       # 元素总数 = 480 × 640 × 3
+img.ndim       # 维度 = 3
+img.strides    # 每维字节步长
+
+# 创建方法
+img1 = np.zeros((480, 640, 3), dtype=np.uint8)  # 全零
+img2 = np.ones((480, 640, 3), dtype=np.uint8) * [0, 0, 255]  # 红色背景
+img3 = np.full((480, 640, 3), (0, 255, 0), dtype=np.uint8)  # 绿色
 ```
 
 ### 2.2 Mat 内存模型
@@ -71,10 +74,10 @@ img.elemSize();     // 每个元素的字节数
 行主序连续存储:
 data[0]  data[1]  data[2]  data[3]  ...  B G R B G R B G R ...
             ↓
-Step = cols × channels × elemSize() = 640 × 3 × 1 = 1920 字节
+步长 = cols × channels × elemSize() = 640 × 3 × 1 = 1920 字节
 
 ROI 提取 (不复制数据, 共享内存):
-Mat roi = img(Rect(100, 100, 200, 200));  // 共享数据指针
+roi = img[100:300, 100:300]  # 共享数据指针, 视图而非拷贝
 ```
 
 ### 2.3 Mat 创建方法对比
@@ -98,6 +101,34 @@ Mat img6 = (Mat_<float>(2, 2) << 1, 2, 3, 4);
 // 方法5: 模板类 Mat_
 Mat_<uchar> img7(480, 640);
 img7(100, 100) = 255;  // 使用 () 而不是 at<>
+```
+
+```python
+# ============================================
+# Python Mat 创建方法对比
+# ============================================
+import numpy as np
+import cv2
+
+# 方法1: NumPy 直接创建
+img1 = np.full((480, 640, 3), (0, 0, 255), dtype=np.uint8)  # 红色背景
+
+# 方法2: zeros/ones
+img2 = np.zeros((480, 640, 3), dtype=np.uint8)
+img3 = np.ones((480, 640, 3), dtype=np.float32)
+
+# 方法3: 工厂方法 (OpenCV)
+img4 = np.zeros((480, 640), dtype=np.uint8)
+img5 = np.ones((480, 640), dtype=np.float32)
+img6 = np.eye(3, dtype=np.float32)  # 单位矩阵
+
+# 方法4: NumPy 切片创建
+img7 = np.zeros((480, 640, 3), dtype=np.uint8)
+img7[:, :] = [0, 0, 255]  # 红色
+
+# 方法5: NumPy 数组操作
+data = np.array([[1, 2], [3, 4]], dtype=np.float32)
+mat = np.array(data, dtype=np.float32)  # 直接转换
 ```
 
 ### 2.4 输入输出数组类型
@@ -155,6 +186,22 @@ GaussianBlur(img_uma, blurred, Size(5, 5), 1.5);
 Mat result = blurred.getMat(ACCESS_READ);
 ```
 
+```python
+# ============================================
+# Python GPU 矩阵 (通过 cv2.UMat)
+# ============================================
+# 注意: Python 中 UMat 接口与 NumPy 数组类似
+# 使用 .get() 将 GPU 数据转到 CPU
+
+img_uma = cv2.UMat(480, 640, cv2.CV_8UC3)
+
+# OpenCL 操作 (自动调度)
+blur = cv2.GaussianBlur(img_uma, (5, 5), 1.5)
+
+# 获取结果 (GPU -> CPU)
+result = blur.get()
+```
+
 ### 2.7 Matx (小型矩阵模板)
 
 Matx 用于小型固定尺寸矩阵，性能更高:
@@ -169,6 +216,23 @@ Matx33f I = Matx33f::eye();
 
 // 访问元素
 float val = M(0, 1);  // 第0行第1列 = 2.f
+```
+
+```python
+# ============================================
+# Python 小型矩阵 (使用 NumPy)
+# ============================================
+import numpy as np
+
+# 2x3 浮点矩阵
+M = np.array([[1., 2., 3.],
+              [4., 5., 6.]], dtype=np.float32)
+
+# 3x3 单位矩阵
+I = np.eye(3, dtype=np.float32)
+
+# 访问元素
+val = M[0, 1]  # = 2.f
 ```
 
 ---
@@ -205,6 +269,38 @@ Mat dotResult = src1.t() * src2;
 compare(src1, src2, dst, CMP_EQ);  // dst = (src1 == src2)
 ```
 
+```python
+# ============================================
+# Python 算术运算
+# ============================================
+import numpy as np
+import cv2
+
+# 加法 (饱和截断)
+dst = cv2.add(src1, src2)  # 饱和截断
+
+# 加权加法 (混合): dst = α·src1 + β·src2 + γ
+dst = cv2.addWeighted(src1, 0.5, src2, 0.5, 0)
+
+# 减法
+dst = cv2.subtract(src1, src2)
+
+# 逐元素乘法
+dst = cv2.multiply(src1, src2, scale=1.0)
+
+# 逐元素除法
+dst = cv2.divide(src1, src2, scale=1.0)
+
+# 矩阵乘法
+dst = cv2.gemm(src1, src2, alpha, src3, beta)
+
+# 矩阵点乘
+dot_result = np.dot(src1.flatten(), src2.flatten())
+
+# 比较
+dst = cv2.compare(src1, src2, cv2.CMP_EQ)  # dst = (src1 == src2)
+```
+
 ### 3.2 逻辑运算
 
 ```cpp
@@ -213,6 +309,20 @@ bitwise_or(src1, src2, dst);     // 按位或
 bitwise_xor(src1, src2, dst);   // 按位异或
 bitwise_not(src, dst);           // 按位非
 inRange(src, lower, upper, dst); // src 在 [lower, upper] 范围内返回 255
+```
+
+```python
+# ============================================
+# Python 逻辑运算
+# ============================================
+import cv2
+import numpy as np
+
+dst = cv2.bitwise_and(src1, src2)  # 按位与
+dst = cv2.bitwise_or(src1, src2)   # 按位或
+dst = cv2.bitwise_xor(src1, src2)  # 按位异或
+dst = cv2.bitwise_not(src)         # 按位非
+dst = cv2.inRange(src, lower, upper)  # src 在 [lower, upper] 范围内返回 255
 ```
 
 ### 3.3 统计运算
@@ -235,6 +345,35 @@ double normL2 = norm(src, NORM_L2); // L2 范数
 double normL1 = norm(src, NORM_L1); // L1 范数
 double normInf = norm(src, NORM_INF); // 无穷范数
 double normDiffL2 = norm(src1, src2, NORM_L2); // 两矩阵差异 L2
+```
+
+```python
+# ============================================
+# Python 统计运算
+# ============================================
+import cv2
+import numpy as np
+
+# 所有通道元素求和
+total = cv2.sumElems(src)  # 返回 Scalar
+
+# 均值
+mean_val = cv2.mean(src, mask)
+
+# 均值和标准差
+mean, stddev = cv2.meanStdDev(src, mask)
+
+# 最值及位置
+min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(src, mask)
+
+# 非零元素计数
+nz = cv2.countNonZero(src)
+
+# 范数
+norm_l2 = cv2.norm(src, cv2.NORM_L2)
+norm_l1 = cv2.norm(src, cv2.NORM_L1)
+norm_inf = cv2.norm(src, cv2.NORM_INF)
+norm_diff_l2 = cv2.norm(src1, src2, cv2.NORM_L2)  # 两矩阵差异 L2
 ```
 
 ### 3.4 数组变换
@@ -273,6 +412,48 @@ vconcat(src1, src2, dst);
 repeat(src, 2, 3, dst);  // 复制 2×3 次 (2行3列)
 ```
 
+```python
+# ============================================
+# Python 数组变换
+# ============================================
+import cv2
+import numpy as np
+
+# 分割/合并通道
+channels = cv2.split(src)    # 分割为单通道列表
+dst = cv2.merge(channels)   # 合并
+
+# 通道混合 (BGR → RGB)
+b, g, r = cv2.split(src)
+rgb = cv2.merge([r, g, b])
+
+# 翻转
+dst = cv2.flip(src, 0)   # 0: 垂直翻转上下
+dst = cv2.flip(src, 1)   # >0: 水平翻转左右
+dst = cv2.flip(src, -1)  # <0: 同时翻转
+
+# 转置
+dst = cv2.transpose(src)
+
+# 旋转 90°
+dst = cv2.rotate(src, cv2.ROTATE_90_CLOCKWISE)      # 顺时针90°
+dst = cv2.rotate(src, cv2.ROTATE_180)                 # 180°
+dst = cv2.rotate(src, cv2.ROTATE_90_COUNTERCLOCKWISE) # 逆时针90°
+
+# 水平拼接: [src1 src2]
+dst = np.hstack([src1, src2])
+# 或
+dst = cv2.hconcat(src1, src2)
+
+# 垂直拼接: [src1; src2]
+dst = np.vstack([src1, src2])
+# 或
+dst = cv2.vconcat(src1, src2)
+
+# 重复/复制
+dst = np.tile(src, (2, 3))  # 复制 2×3 次
+```
+
 ### 3.5 类型转换
 
 ```cpp
@@ -290,6 +471,35 @@ normalize(src, dst, 1.0, 0, NORM_L2);  // L2 归一化, 结果范数为1
 normalize(src, dst, 0, 255, NORM_MINMAX); // 归一化到 [0, 255]
 ```
 
+```python
+# ============================================
+# Python 类型转换
+# ============================================
+import cv2
+import numpy as np
+
+# 数据类型转换 (alpha=scale, beta=offset)
+# 公式: dst = src * alpha + beta
+dst = src.astype(np.float32)  # 直接转换
+
+# 使用 convertTo
+dst = cv2.convertScaleAbs(src)  # 转 uint8, 饱和截断
+
+# 归一化
+dst = src / 255.0  # 归一化到 [0, 1]
+
+# L2 归一化
+norm = np.linalg.norm(src.flatten())
+dst = src / norm if norm > 0 else src
+
+# 归一化到 [0, 255]
+dst = cv2.normalize(src, None, 0, 255, cv2.NORM_MINMAX)
+
+# Min-Max 归一化
+min_val, max_val = src.min(), src.max()
+dst = (src - min_val) / (max_val - min_val) * 255
+```
+
 ### 3.6 查找表 (LUT)
 
 ```cpp
@@ -300,6 +510,24 @@ for (int i = 0; i < 256; i++)
 
 // 应用 LUT (O(1) 复杂度的像素变换)
 LUT(src, lut, dst);
+```
+
+```python
+# ============================================
+# Python 查找表 (LUT)
+# ============================================
+import cv2
+import numpy as np
+
+# 创建查找表 (gamma 校正)
+gamma = 2.2
+lut = np.array([int((i / 255.0) ** (1.0 / gamma) * 255) for i in range(256)], dtype=np.uint8)
+
+# 应用 LUT (O(1) 复杂度的像素变换)
+dst = cv2.LUT(src, lut)
+
+# 也可以直接用 NumPy 实现
+dst = lut[src]
 ```
 
 ### 3.7 矩阵运算
@@ -326,6 +554,35 @@ double n = norm(src, NORM_L2);
 Mat reshaped = src.reshape(src.channels(), newRows);
 ```
 
+```python
+# ============================================
+# Python 矩阵运算
+# ============================================
+import cv2
+import numpy as np
+
+# 转置
+T = src.T
+
+# 逆矩阵
+inv = cv2.invert(src)[1]  # 返回 (retval, inverted)
+
+# 行列式 (仅方阵)
+d = np.linalg.det(src)
+
+# 迹 (对角元素和)
+t = np.trace(src)
+
+# 矩阵范数
+n = np.linalg.norm(src)
+
+# 重组矩阵形状 (channels, rows)
+reshaped = src.reshape(-1, new_rows)  # NumPy
+
+# SVD 分解
+u, s, vt = np.linalg.svd(src)
+```
+
 ### 3.8 复制与填充
 
 ```cpp
@@ -340,6 +597,32 @@ Mat filled = Mat(100, 100, CV_8UC3, Scalar(255, 0, 0)); // 蓝色
 // ROI 复制
 Mat roi = src(Rect(0, 0, 50, 50));
 roi.copyTo(dst);  // 复制 ROI 到 dst
+```
+
+```python
+# ============================================
+# Python 复制与填充
+# ============================================
+import cv2
+import numpy as np
+
+# 复制 (深拷贝)
+copy = src.copy()  # 深拷贝
+
+# 复制到目标 (可带掩码)
+dst = np.zeros_like(src)
+src.copyTo(dst)  # 深拷贝
+
+# 带掩码复制 (仅复制掩码位置)
+mask = (src > 100).astype(np.uint8) * 255
+dst = cv2.bitwise_and(src, src, mask=mask)
+
+# 填充
+filled = np.full((100, 100, 3), (255, 0, 0), dtype=np.uint8)  # 蓝色
+
+# ROI 复制
+roi = src[0:50, 0:50]  # 切片
+roi.copyTo(dst)  # 复制 ROI 到 dst
 ```
 
 ---
@@ -371,6 +654,32 @@ for (int r = 0; r < img.rows; r++) {
 }
 ```
 
+```python
+# ============================================
+# Python 行连续性
+# ============================================
+import cv2
+import numpy as np
+
+img = np.zeros((480, 640, 3), dtype=np.uint8)
+
+# 判断连续性
+is_contiguous = img.flags['C_CONTIGUOUS']
+
+# NumPy 数组总是连续存储 (无填充)
+# 如果需要遍历:
+if is_contiguous:
+    flat = img.ravel()  # 或 img.flatten()
+    for i in range(len(flat)):
+        flat[i] = processing(flat[i])
+else:
+    # 非连续时需要双重循环
+    for r in range(img.shape[0]):
+        for c in range(img.shape[1]):
+            # 处理每个像素
+            pass
+```
+
 ### 4.2 ROI (感兴趣区域)
 
 ```cpp
@@ -389,6 +698,27 @@ Mat regionCopy = img(roi).clone();
 // 避免 ROI 引用失效: 确保 img 生命周期大于 region
 ```
 
+```python
+# ============================================
+# Python ROI (感兴趣区域)
+# ============================================
+import cv2
+import numpy as np
+
+img = cv2.imread("photo.jpg")
+
+# 提取 ROI (NumPy 切片是视图, 共享内存)
+roi = img[100:300, 100:300]  # [rows, cols]
+
+# 修改 roi 会影响 img
+roi[:, :] = [0, 0, 0]  # 左上角区域变黑
+
+# 需要时复制 ROI
+roi_copy = img[100:300, 100:300].copy()
+
+# 避免引用失效: 确保 img 生命周期大于 roi
+```
+
 ### 4.3 Scalar 类型
 
 ```cpp
@@ -403,6 +733,28 @@ img = Scalar(0, 0, 255);   // 红色
 // 算术运算
 Scalar s1(100), s2(50);
 Scalar s3 = s1 + s2;  // (150, 150, 150, 150)
+```
+
+```python
+# ============================================
+# Python Scalar (使用 NumPy 或 cv2.Scalar)
+# ============================================
+import cv2
+import numpy as np
+
+# cv2.Scalar (4元素向量)
+s = cv2.Scalar(255)              # 单通道: (255)
+s = cv2.Scalar(255, 128, 64)     # 3通道: B=255, G=128, R=64
+s = cv2.Scalar(255, 128, 64, 255) # 4通道
+
+# 在 NumPy 中直接使用元组/列表
+# 红色图像
+img = np.full((480, 640, 3), (0, 0, 255), dtype=np.uint8)
+
+# 算术运算 (NumPy 自动广播)
+s1 = np.array([100], dtype=np.float32)
+s2 = np.array([50], dtype=np.float32)
+s3 = s1 + s2  # [150]
 ```
 
 ### 4.4 saturate_cast - 饱和转换
@@ -426,6 +778,27 @@ saturate_cast<short>(x)   // x -> int16
 saturate_cast<int>(x)      // x -> int32
 saturate_cast<float>(x)   // x -> float
 saturate_cast<double>(x)   // x -> double
+```
+
+```python
+# ============================================
+# Python 饱和转换
+# ============================================
+import cv2
+import numpy as np
+
+# 饱和截断 (NumPy 自动)
+val = np.clip(300.0, 0, 255)  # 返回 255
+val = np.clip(-10.0, 0, 255)  # 返回 0
+
+# cv2.add 使用饱和运算
+src1 = np.array([[250]], dtype=np.uint8)
+src2 = np.array([[10]], dtype=np.uint8)
+dst = cv2.add(src1, src2)  # dst = 255 (不是 260)
+
+# saturate_cast 等效 (使用 np.clip)
+def saturate_cast_uchar(x):
+    return np.clip(x, 0, 255).astype(np.uint8)
 ```
 
 ### 4.5 Mat 内部结构
@@ -512,6 +885,38 @@ int main() {
 }
 ```
 
+```python
+# ============================================
+# Python 基础图像操作
+# ============================================
+import cv2
+import numpy as np
+
+def main():
+    # 读取图像
+    img = cv2.imread("photo.jpg", cv2.IMREAD_COLOR)
+
+    # 转换为灰度图
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # 创建反色图像
+    inverted = cv2.bitwise_not(img)
+
+    # 调整亮度和对比度
+    # alpha=1.5 (对比度), beta=50 (亮度)
+    adjusted = cv2.convertScaleAbs(img, alpha=1.5, beta=50)
+
+    # 显示
+    cv2.imshow("原图", img)
+    cv2.imshow("灰度", gray)
+    cv2.imshow("反色", inverted)
+    cv2.imshow("调整后", adjusted)
+    cv2.waitKey(0)
+
+if __name__ == "__main__":
+    main()
+```
+
 ### 5.2 像素访问方法对比
 
 ```cpp
@@ -548,6 +953,47 @@ for (auto it = img.begin<Vec3b>(); it != img.end<Vec3b>(); ++it) {
 // 方法5: 整图像素访问 (Mat_)
 Mat_<Vec3b> img_(img);  // 创建视图
 img_(y, x) = Vec3b(255, 0, 0);
+```
+
+```python
+# ============================================
+# Python 像素访问方法对比
+# ============================================
+import cv2
+import numpy as np
+
+img = np.zeros((480, 640, 3), dtype=np.uint8)
+
+# 方法1: 直接索引 (最常用, 推荐)
+img[y, x, 0] = 255   # B 通道 (blue)
+img[y, x, 1] = 0     # G 通道 (green)
+img[y, x, 2] = 0     # R 通道 (red)
+
+# 或者
+img[y, x] = [255, 0, 0]  # 设置整个像素
+
+# 灰度图
+gray = np.zeros((480, 640), dtype=np.uint8)
+gray[y, x] = 128
+
+# 方法2: 切片访问整行 (高效)
+row = img[y]
+row[x * 3] = 255       # B
+row[x * 3 + 1] = 0     # G
+row[x * 3 + 2] = 0     # R
+
+# 方法3: 展平数组 (flat 迭代器)
+for i, pixel in enumerate(img.flat):
+    pixel[...] = processing(pixel)
+
+# 方法4: reshape + 迭代 (NumPy 方式)
+pixels = img.reshape(-1, 3)  # (rows*cols, 3)
+for i in range(len(pixels)):
+    pixels[i] = [255, 0, 0]  # BGR
+
+# 方法5: NumPy 高级索引
+# 设置整个通道
+img[:, :, 0] = 255  # 所有蓝色通道设为 255
 ```
 
 ### 5.3 批量图像处理
@@ -590,6 +1036,43 @@ void batchProcess(const vector<string>& filenames) {
 }
 ```
 
+```python
+# ============================================
+# Python 批量图像处理
+# ============================================
+import cv2
+import numpy as np
+
+def batch_process(filenames):
+    images = []
+    for filename in filenames:
+        img = cv2.imread(filename)
+        if img is None:
+            continue
+
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)
+        images.append(gray)
+
+    # 计算平均图像
+    avg_img = np.zeros(images[0].shape, dtype=np.float32)
+    for img in images:
+        float_img = img.astype(np.float32)
+        avg_img += float_img
+    avg_img /= len(images)
+
+    # 计算每个像素的标准差
+    std_dev_img = np.zeros(images[0].shape, dtype=np.float32)
+    for img in images:
+        float_img = img.astype(np.float32)
+        diff = np.abs(float_img - avg_img)
+        diff_sq = diff ** 2
+        std_dev_img += diff_sq
+    std_dev_img = np.sqrt(std_dev_img / len(images))
+
+    return avg_img, std_dev_img
+```
+
 ### 5.4 伽马校正 (使用 LUT)
 
 ```cpp
@@ -619,6 +1102,35 @@ int main() {
     imshow("变暗 (γ=2.0)", dark);
     waitKey(0);
 }
+```
+
+```python
+# ============================================
+# Python 伽马校正
+# ============================================
+import cv2
+import numpy as np
+
+def gamma_correct(src, gamma):
+    # gamma < 1: 提高暗部亮度 (变亮)
+    # gamma > 1: 提高亮部亮度 (变暗)
+    lut = np.array([int((i / 255.0) ** (1.0 / gamma) * 255) for i in range(256)], dtype=np.uint8)
+    dst = cv2.LUT(src, lut)
+    return dst
+
+def main():
+    img = cv2.imread("dark.jpg")
+
+    bright = gamma_correct(img, 0.5)   # gamma=0.5 提亮
+    dark = gamma_correct(img, 2.0)    # gamma=2.0 变暗
+
+    cv2.imshow("原图", img)
+    cv2.imshow("提亮 (γ=0.5)", bright)
+    cv2.imshow("变暗 (γ=2.0)", dark)
+    cv2.waitKey(0)
+
+if __name__ == "__main__":
+    main()
 ```
 
 ### 5.5 图像混合与融合
@@ -657,6 +1169,31 @@ void pyramidBlend(const Mat& img1, const Mat& img2, int levels, Mat& dst) {
 }
 ```
 
+```python
+# ============================================
+# Python 图像混合与融合
+# ============================================
+import cv2
+import numpy as np
+
+def blend_images(img1, img2, alpha):
+    # 混合公式: dst = α*src1 + (1-α)*src2
+    dst = cv2.addWeighted(img1, alpha, img2, 1 - alpha, 0)
+    return dst
+
+def pyramid_blend(img1, img2, levels=6):
+    # 构建高斯金字塔
+    g1 = [img1]
+    g2 = [img2]
+    for i in range(1, levels):
+        g1.append(cv2.pyrDown(g1[i-1]))
+        g2.append(cv2.pyrDown(g2[i-1]))
+
+    # 构建拉普拉斯金字塔并融合
+    # ... (简化示例)
+    return blended
+```
+
 ### 5.6 矩阵运算示例
 
 ```cpp
@@ -691,6 +1228,38 @@ void matrixOperations() {
     Mat w, u, vt;
     SVD::compute(A, w, u, vt);
 }
+```
+
+```python
+# ============================================
+# Python 矩阵运算
+# ============================================
+import numpy as np
+import cv2
+
+def matrix_operations():
+    # 创建矩阵
+    A = np.array([[1, 2], [3, 4]], dtype=np.float32)
+    B = np.eye(2, dtype=np.float32)
+    C = np.ones((2, 2), dtype=np.float32)
+
+    # 逐元素乘法
+    result = np.multiply(A, B)
+
+    # 矩阵乘法 (线性代数乘)
+    result = np.dot(A, B)  # 或 A @ B
+
+    # 转置
+    AT = A.T
+
+    # 逆矩阵
+    Ainv = np.linalg.inv(A)
+
+    # 特征值和特征向量
+    eigenvalues, eigenvectors = np.linalg.eig(A.T @ A)
+
+    # SVD 分解
+    u, s, vt = np.linalg.svd(A)
 ```
 
 ---
