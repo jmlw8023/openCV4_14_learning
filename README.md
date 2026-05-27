@@ -33,41 +33,41 @@
 
 | 模块 | 描述 | 状态 |
 |--------|-------------|--------|
-| [core](./modules/core/README.md) | 核心功能：Mat、数组操作、XML/YAML、并行计算 | 🔄 进行中 |
-| [imgcodecs](./modules/imgcodecs/README.md) | 图像编解码：imread/imwrite、图像格式解码 | 📋 计划中 |
-| [highgui](./modules/highgui/README.md) | 高级GUI：namedWindow、imshow、滑动条 | 📋 计划中 |
+| [core](./modules/core/README.md) | 核心功能：Mat、数组操作、XML/YAML、并行计算 | ✅ 完成 |
+| [imgcodecs](./modules/imgcodecs/README.md) | 图像编解码：imread/imwrite、图像格式解码 | ✅ 完成 |
+| [highgui](./modules/highgui/README.md) | 高级GUI：namedWindow、imshow、滑动条 | ✅ 完成 |
 
 ### Stage 2: 基础
 
 | 模块 | 描述 | 状态 |
 |--------|-------------|--------|
-| [imgproc](./modules/imgproc/README.md) | 图像处理：滤波、形态学、几何变换、颜色空间 | 🔄 进行中 |
-| [videoio](./modules/videoio/README.md) | 视频IO：VideoCapture、VideoWriter | 📋 计划中 |
-| [video](./modules/video/README.md) | 视频分析：KCF、MOSSE跟踪、光流 | 📋 计划中 |
+| [imgproc](./modules/imgproc/README.md) | 图像处理：滤波、形态学、几何变换、颜色空间 | ✅ 完成 |
+| [videoio](./modules/videoio/README.md) | 视频IO：VideoCapture、VideoWriter | ✅ 完成 |
+| [video](./modules/video/README.md) | 视频分析：KCF、MOSSE跟踪、光流 | ✅ 完成 |
 
 ### Stage 3: 中级
 
 | 模块 | 描述 | 状态 |
 |--------|-------------|--------|
-| [features2d](./modules/features2d/README.md) | 特征检测：SIFT/SURF/ORB、BFMatcher/FLANN | 📋 计划中 |
-| [calib3d](./modules/calib3d/README.md) | 相机标定：内外参、立体匹配 | 📋 计划中 |
-| [objdetect](./modules/objdetect/README.md) | 对象检测：Haar、HOG、SSD/YOLO | 📋 计划中 |
+| [features2d](./modules/features2d/README.md) | 特征检测：SIFT/SURF/ORB、BFMatcher/FLANN | ✅ 完成 |
+| [calib3d](./modules/calib3d/README.md) | 相机标定：内外参、立体匹配 | ✅ 完成 |
+| [objdetect](./modules/objdetect/README.md) | 对象检测：Haar、HOG、SSD/YOLO | ✅ 完成 |
 
 ### Stage 4: 高级
 
 | 模块 | 描述 | 状态 |
 |--------|-------------|--------|
-| [dnn](./modules/dnn/README.md) | 深度神经网络：ONNX、TensorFlow、PyTorch模型加载 | 📋 计划中 |
-| [photo](./modules/photo/README.md) | 计算摄影：HDR、去噪、图像修复 | 📋 计划中 |
-| [stitching](./modules/stitching/README.md) | 图像拼接：全景、多频段融合 | 📋 计划中 |
+| [dnn](./modules/dnn/README.md) | 深度神经网络：ONNX、TensorFlow、PyTorch模型加载 | ✅ 完成 |
+| [photo](./modules/photo/README.md) | 计算摄影：HDR、去噪、图像修复 | ✅ 完成 |
+| [stitching](./modules/stitching/README.md) | 图像拼接：全景、多频段融合 | ✅ 完成 |
 
 ### Stage 5: 专家
 
 | 模块 | 描述 | 状态 |
 |--------|-------------|--------|
-| [gapi](./modules/gapi/README.md) | 图引擎：kernel开发、异步执行 | 📋 计划中 |
-| [ml](./modules/ml/README.md) | 机器学习：SVM、决策树、神经网络 | 📋 计划中 |
-| [flann](./modules/flann/README.md) | FLANN：KD树、LSH、层次聚类 | 📋 计划中 |
+| [gapi](./modules/gapi/README.md) | 图引擎：kernel开发、异步执行 | ✅ 完成 |
+| [ml](./modules/ml/README.md) | 机器学习：SVM、决策树、神经网络 | ✅ 完成 |
+| [flann](./modules/flann/README.md) | FLANN：KD树、LSH、层次聚类 | ✅ 完成 |
 | [world](./modules/world/README.md) | 统一入口模块 | 📋 计划中 |
 
 ---
