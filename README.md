@@ -1,176 +1,142 @@
-# OpenCV 学习路线图（基础 → 专家）
+# OpenCV Learning Guide
 
-> 从入门到专家的系统性学习指南
-
-## 学习阶段概览
-
-| 阶段 | 级别 | 核心模块 | 目标 |
-|------|------|----------|------|
-| **Stage 1** | 入门 | core, imgcodecs, highgui | 掌握图像读写、显示、基本操作 |
-| **Stage 2** | 基础 | imgproc, videoio, video | 掌握图像处理、视频分析基础 |
-| **Stage 3** | 进阶 | features2d, calib3d, objdetect | 掌握特征提取、相机标定、对象检测 |
-| **Stage 4** | 高级 | dnn, photo, stitching | 掌握深度学习、图像修复、拼接 |
-| **Stage 5** | 专家 | gapi, ml, flann | 掌握图引擎、机器学习、高维搜索 |
+> **Version**: OpenCV 4.14.0-pre
+> **Repository**: https://github.com/jmlw8023/opencv-4.14.0-learning
+> **License**: Apache 2.0
 
 ---
 
-## Stage 1：入门 🚀
+## Version Information
 
-### 目标
-- 理解 OpenCV 基本架构
-- 掌握图像的加载、显示、保存
-- 掌握 Mat 数据结构基本操作
-
-### 模块与顺序
-
-| 序号 | 模块 | 重点内容 | 预计时间 |
-|------|------|----------|----------|
-| 1.1 | [core](./core/README.md) | Mat数据结构、数组操作、XML/YAML | 3-5天 |
-| 1.2 | [imgcodecs](./imgcodecs/README.md) | imread/imwrite、图像格式解码 | 1-2天 |
-| 1.3 | [highgui](./highgui/README.md) | namedWindow、imshow、Trackbar | 1-2天 |
-
-### 阶段产出
-- 能独立完成图像的读取、处理、显示流程
-- 理解 Mat 的内存模型（行连续、ROI）
-- 掌握基本的像素操作
+| Item | Value |
+|------|-------|
+| OpenCV Version | 4.14.0-pre |
+| Major | 4 |
+| Minor | 14 |
+| Patch | 0 |
+| Status | pre |
+| Source | [opencv/opencv](https://github.com/opencv/opencv) |
 
 ---
 
-## Stage 2：基础 🔰
+## Table of Contents
 
-### 目标
-- 掌握常用图像处理算法
-- 理解视频捕获与处理流程
-- 能实现简单的视频分析应用
-
-### 模块与顺序
-
-| 序号 | 模块 | 重点内容 | 预计时间 |
-|------|------|----------|----------|
-| 2.1 | [imgproc](./imgproc/README.md) | 滤波、形态学、几何变换、颜色空间 | 5-7天 |
-| 2.2 | [videoio](./videoio/README.md) | VideoCapture、VideoWriter | 2-3天 |
-| 2.3 | [video](./video/README.md) | KCF、MOSSE跟踪、OpticalFlow | 3-5天 |
-
-### 阶段产出
-- 实现滤镜、边缘检测、轮廓查找
-- 完成视频读取、处理、保存
-- 能实现简单的目标跟踪应用
+- [Learning Roadmap](./README.md#learning-roadmap)
+- [Module Guides](./modules/)
+- [How to Contribute](./CONTRIBUTING.md)
 
 ---
 
-## Stage 3：进阶 📈
+## Learning Roadmap
 
-### 目标
-- 掌握特征检测与匹配
-- 理解相机标定与三维重建原理
-- 能实现对象检测基本流程
+### Stage 1: Getting Started
 
-### 模块与顺序
+| Module | Description | Status |
+|--------|-------------|--------|
+| [core](./modules/core/README.md) | Core functionality: Mat, arrays, XML/YAML, parallel processing | 🔄 In Progress |
+| [imgcodecs](./modules/imgcodecs/README.md) | Image codec: imread/imwrite, image format decoding | 📋 Planned |
+| [highgui](./modules/highgui/README.md) | High-level GUI: namedWindow, imshow, Trackbar | 📋 Planned |
 
-| 序号 | 模块 | 重点内容 | 预计时间 |
-|------|------|----------|----------|
-| 3.1 | [features2d](./features2d/README.md) | SIFT/SURF/ORB、BFMatcher/FLANN | 5-7天 |
-| 3.2 | [calib3d](./calib3d/README.md) | 相机标定、畸变校正、立体匹配 | 5-7天 |
-| 3.3 | [objdetect](./objdetect/README.md) | Haar cascades、HOG、SSD/YOLO | 5-7天 |
+### Stage 2: Fundamentals
 
-### 阶段产出
-- 能实现图像拼接（SIFT + 融合）
-- 完成单目/双目相机标定
-- 能部署简单的目标检测模型
+| Module | Description | Status |
+|--------|-------------|--------|
+| [imgproc](./modules/imgproc/README.md) | Image processing: filtering, morphology, geometry, color spaces | 📋 Planned |
+| [videoio](./modules/videoio/README.md) | Video I/O: VideoCapture, VideoWriter | 📋 Planned |
+| [video](./modules/video/README.md) | Video analysis: KCF, MOSSE tracking, OpticalFlow | 📋 Planned |
 
----
+### Stage 3: Intermediate
 
-## Stage 4：高级 🎯
+| Module | Description | Status |
+|--------|-------------|--------|
+| [features2d](./modules/features2d/README.md) | Feature detection: SIFT/SURF/ORB, BFMatcher/FLANN | 📋 Planned |
+| [calib3d](./modules/calib3d/README.md) | Camera calibration: intrinsics/extrinsics, stereo matching | 📋 Planned |
+| [objdetect](./modules/objdetect/README.md) | Object detection: Haar, HOG, SSD/YOLO | 📋 Planned |
 
-### 目标
-- 掌握深度神经网络部署
-- 理解图像修复与增强技术
-- 能实现专业的图像拼接
+### Stage 4: Advanced
 
-### 模块与顺序
+| Module | Description | Status |
+|--------|-------------|--------|
+| [dnn](./modules/dnn/README.md) | Deep Neural Network: ONNX, TensorFlow, PyTorch model loading | 📋 Planned |
+| [photo](./modules/photo/README.md) | Computational photography: HDR, denoising, inpainting | 📋 Planned |
+| [stitching](./modules/stitching/README.md) | Image stitching: panorama, multi-band blending | 📋 Planned |
 
-| 序号 | 模块 | 重点内容 | 预计时间 |
-|------|------|----------|----------|
-| 4.1 | [dnn](./dnn/README.md) | ONNX/TensorFlow/PyTorch模型加载 | 5-7天 |
-| 4.2 | [photo](./photo/README.md) | HDR、去噪、铅笔滤镜、修复 | 3-5天 |
-| 4.3 | [stitching](./stitching/README.md) | 全景拼接、多频段融合 | 3-5天 |
+### Stage 5: Expert
 
-### 阶段产出
-- 能部署自定义深度学习模型进行推理
-- 实现HDR合成、图像修复
-- 完成360°全景拼接
-
----
-
-## Stage 5：专家 👑
-
-### 目标
-- 理解图计算引擎架构
-- 掌握高维特征索引
-- 能进行机器学习模型训练
-
-### 模块与顺序
-
-| 序号 | 模块 | 重点内容 | 预计时间 |
-|------|------|----------|----------|
-| 5.1 | [gapi](./gapi/README.md) | 图引擎、kernel开发、异步执行 | 5-7天 |
-| 5.2 | [flann](./flann/README.md) | KD树、LSH、层次聚类 | 3-5天 |
-| 5.3 | [ml](./ml/README.md) | SVM、决策树、神经网络、Boosting | 5-7天 |
-
-### 阶段产出
-- 能开发自定义 GAPI kernel
-- 实现大规模特征快速检索
-- 完成模型训练与调优
+| Module | Description | Status |
+|--------|-------------|--------|
+| [gapi](./modules/gapi/README.md) | Graph API: kernel development, async execution | 📋 Planned |
+| [ml](./modules/ml/README.md) | Machine Learning: SVM, Decision Trees, Neural Networks | 📋 Planned |
+| [flann](./modules/flann/README.md) | FLANN: KD-Tree, LSH, hierarchical clustering | 📋 Planned |
+| [world](./modules/world/README.md) | Unified入口 module | 📋 Planned |
 
 ---
 
-## 学习技巧
+## Module Documentation Structure
 
-### 1. 源码阅读方法
-```
-├── 先看头文件的类/函数声明
-├── 再看示例代码理解用法
-├── 最后读实现细节
-└── 配合调试器单步跟踪
+Each module follows this structure:
+
+```markdown
+# Module Name
+
+## Overview
+## Key Data Structures
+## Core APIs
+## Implementation Analysis
+## Code Examples
+## Exercises
+## References
 ```
 
-### 2. 实践项目建议
+---
 
-**入门阶段项目**：
-- 图像编辑器（亮度、对比度、滤镜）
-- 摄像头实时预览
+## Development Guidelines
 
-**基础阶段项目**：
-- 车牌检测预处理流水线
-- 视频运动目标跟踪
+### Git Workflow
 
-**进阶阶段项目**：
--全景图像拼接
-- AR标定助手
+```bash
+# 1. Create a new branch for each module
+git checkout -b module/core
 
-**高级阶段项目**：
-- 部署自定义YOLO模型
-- HDR照相机
+# 2. Make changes and commit
+git add .
+git commit -m "docs(core): add detailed analysis of Mat structure"
 
-**专家阶段项目**：
-- 自定义GAPI图像处理pipeline
-- 大规模人脸检索系统
+# 3. Push to remote
+git push -u origin module/core
+```
 
-### 3. 参考资源
+### Commit Message Convention
 
-- 📖 官方文档：https://docs.opencv.org/
-- 📖 Learning OpenCV 4：https://www.oreilly.com/library/view/learning-opencv-4/
-- 🐍 OpenCV-Python：https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html
-- 💻 源码：https://github.com/opencv/opencv
+Format: `<type>(<module>): <description>`
+
+Types:
+- `docs` - Documentation only
+- `fix` - Bug fix
+- `feat` - New feature
+- `refactor` - Code refactoring
+- `test` - Test updates
+
+Examples:
+```bash
+git commit -m "docs(core): add Mat memory model analysis"
+git commit -m "docs(imgproc): add filtering algorithms guide"
+git commit -m "feat(core): add practice exercises"
+```
 
 ---
 
-## 学习记录
+## References
 
-| 日期 | 完成阶段 | 备注 |
-|------|----------|------|
-| 2026/05/27 | Stage 1 | 刚开始 |
+- [Official Documentation](https://docs.opencv.org/4.14.0/)
+- [OpenCV Source](https://github.com/opencv/opencv)
+- [OpenCV Tutorials](https://docs.opencv.org/4.14.0/tutorials/tutorials.html)
+- [Learning OpenCV 4](https://www.oreilly.com/library/view/learning-opencv-4/)
 
 ---
 
-**下一步**：[开始学习 Stage 1 - core 模块](./core/README.md)
+## Update History
+
+| Date | Version | Changes |
+|------|---------|---------|
+| 2026-05-27 | 4.14.0-pre | Initial commit with learning roadmap and core module guide |
