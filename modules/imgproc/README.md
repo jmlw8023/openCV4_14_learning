@@ -1,226 +1,233 @@
-# OpenCV imgproc Module Guide
+# OpenCV imgproc 模块学习指南
 
-> **Module**: imgproc
-> **OpenCV Version**: 4.14.0-pre
-> **Stage**: 2 (Fundamentals)
-
----
-
-## Table of Contents
-
-1. [Overview](./README.md#1-overview)
-2. [Key Data Structures](./README.md#2-key-data-structures)
-3. [Core APIs](./README.md#3-core-apis)
-4. [Implementation Analysis](./README.md#4-implementation-analysis)
-5. [Code Examples](./README.md#5-code-examples)
-6. [Exercises](./README.md#6-exercises)
-7. [References](./README.md#7-references)
+> **模块**: imgproc
+> **OpenCV 版本**: 4.14.0-pre
+> **阶段**: Stage 2 - 基础
 
 ---
 
-## 1. Overview
+## 目录
 
-**imgproc** (Image Processing) provides comprehensive image transformation functions:
+1. [概述](./README.md#1概述)
+2. [核心数据结构](./README.md#2核心数据结构)
+3. [核心API](./README.md#3核心api)
+4. [实现分析](./README.md#4实现分析)
+5. [代码示例](./README.md#5代码示例)
+6. [练习题](./README.md#6练习题)
+7. [参考资料](./README.md#7参考资料)
 
-| Feature | Description |
+---
+
+## 1.概述
+
+**imgproc** (图像处理) 提供全面的图像变换功能:
+
+| 功能 | 描述 |
 |---------|-------------|
-| **Geometric Transformations** | Resize, rotate, warp, perspective |
-| **Filtering** | blur, Gaussian, median, bilateral |
-| **Morphology** | erode, dilate, open, close, gradient |
-| **Color Spaces** | BGR, HSV, Lab, YCrCb conversion |
-| **Histogram** | Equalization, backprojection |
-| **Contours** | Finding, approximation, moments |
-| **Image Gradients** | Sobel, Laplacian, Canny |
-| **Thresholding** | Binary, Otsu, adaptive |
+| **几何变换** | 调整大小、旋转、扭曲、透视 |
+| **滤波** | 模糊、高斯、中值、双边滤波 |
+| **形态学** | 腐蚀、膨胀、开运算、闭运算、梯度 |
+| **颜色空间** | BGR、HSV、Lab、YCrCb 转换 |
+| **直方图** | 均衡化、反向投影 |
+| **轮廓** | 查找、近似、矩 |
+| **图像梯度** | Sobel、Laplacian、Canny |
+| **阈值分割** | 二值化、Otsu、自适应 |
 
-**Header**: `opencv2/imgproc.hpp`
+**头文件**: `opencv2/imgproc.hpp`
 
 ---
 
-## 2. Key Data Structures
+## 2.核心数据结构
 
 ### 2.1 Point, Size, Rect
 
 ```cpp
 #include <opencv2/imgproc.hpp>
 
-// Point
-Point2f pt(100.f, 200.f);
-Point pt2(100, 200);
+// 点 (支持整数和浮点)
+Point2f pt(100.f, 200.f);   // 浮点坐标
+Point pt2(100, 200);        // 整数坐标
 
-// Size
-Size sz(640, 480);
-Size2f szf(640.5f, 480.5f);
+// 尺寸
+Size sz(640, 480);          // 整数尺寸
+Size2f szf(640.5f, 480.5f); // 浮点尺寸
 
-// Rect (x, y, width, height)
+// 矩形 (x, y, width, height)
 Rect roi(100, 100, 200, 150);
-roi.x; roi.y; roi.width; roi.height;
-roi.area();        // width * height
-roi.contains(pt); // Check if point inside
+roi.x; roi.y;              // 左上角坐标
+roi.width; roi.height;     // 宽和高
+roi.area();                // 面积 = width * height
+roi.contains(pt);          // 检查点是否在矩形内
 ```
 
-### 2.2 RotatedRect
+### 2.2 RotatedRect (旋转矩形)
 
 ```cpp
+// 旋转矩形: 中心点 + 尺寸 + 旋转角度
 RotatedRect rr(Point2f(center.x, center.y), Size2f(w, h), angle);
 
-// Access members
-rr.center;    // Center point
-rr.size;      // Width and height
-rr.angle;     // Rotation angle in degrees
+// 访问成员
+rr.center;    // 中心点
+rr.size;      // 宽度和高度
+rr.angle;     // 旋转角度 (度)
 
-// Bounding box
+// 获取边界框
 Rect2f bbox = rr.boundingRect();
 ```
 
 ---
 
-## 3. Core APIs
+## 3.核心API
 
-### 3.1 Resize and Geometric Transformations
+### 3.1 调整大小和几何变换
 
 ```cpp
-// Resize
 Mat dst;
-resize(src, dst, Size(w, h));                    // Explicit size
-resize(src, dst, Size(), 0.5, 0.5, INTER_LINEAR); // Scale
 
-// Rotate 90°
+// 调整大小
+resize(src, dst, Size(w, h));                    // 指定尺寸
+resize(src, dst, Size(), 0.5, 0.5, INTER_LINEAR); // 缩放因子
+
+// 旋转 90°
 rotate(src, dst, ROTATE_90_CLOCKWISE);
 
-// Warp affine
+// 仿射变换
 Mat M = getRotationMatrix2D(center, angle, scale);
 warpAffine(src, dst, M, Size(w, h));
 
-// Perspective transform
+// 透视变换
 Mat H = findHomography(srcPoints, dstPoints);
 warpPerspective(src, dst, H, Size(w, h));
 ```
 
-### 3.2 Filtering
-
-```cpp
-// Blur (average)
-blur(src, dst, Size(5, 5));
-
-// Gaussian blur
-GaussianBlur(src, dst, Size(5, 5), sigmaX);
-
-// Median blur
-medianBlur(src, dst, 5);
-
-// Bilateral filter (edge-preserving)
-bilateralFilter(src, dst, 9, 75, 75);
-
-// Custom filter
-Mat kernel = (Mat_<float>(3,3) << 0, -1, 0, -1, 5, -1, 0, -1, 0);
-filter2D(src, dst, -1, kernel);
-```
-
-### 3.3 Morphology
+### 3.2 滤波
 
 ```cpp
 Mat dst;
 
-// Erode (shrink)
+// 模糊 (均值)
+blur(src, dst, Size(5, 5));
+
+// 高斯模糊
+GaussianBlur(src, dst, Size(5, 5), sigmaX);
+
+// 中值模糊 (对椒盐噪声有效)
+medianBlur(src, dst, 5);
+
+// 双边滤波 (保边滤波)
+bilateralFilter(src, dst, 9, 75, 75);
+
+// 自定义卷积核
+Mat kernel = (Mat_<float>(3,3) << 0, -1, 0, -1, 5, -1, 0, -1, 0);
+filter2D(src, dst, -1, kernel);
+```
+
+### 3.3 形态学运算
+
+```cpp
+Mat dst;
+
+// 腐蚀 (收缩)
 erode(src, dst, getStructuringElement(MORPH_RECT, Size(3,3)));
 
-// Dilate (expand)
+// 膨胀 (扩张)
 dilate(src, dst, getStructuringElement(MORPH_RECT, Size(3,3)));
 
-// Opening (erode then dilate)
+// 开运算 (腐蚀后膨胀, 去噪)
 morphologyEx(src, dst, MORPH_OPEN, kernel);
 
-// Closing (dilate then erode)
+// 闭运算 (膨胀后腐蚀, 填孔)
 morphologyEx(src, dst, MORPH_CLOSE, kernel);
 
-// Gradient (outer - inner)
+// 形态学梯度 (外轮廓减内轮廓)
 morphologyEx(src, dst, MORPH_GRADIENT, kernel);
 
-// Black hat and top hat
+// 黑帽和顶帽
 morphologyEx(src, dst, MORPH_BLACKHAT, kernel);
 morphologyEx(src, dst, MORPH_TOPHAT, kernel);
 ```
 
-### 3.4 Color Space Conversion
+### 3.4 颜色空间转换
 
 ```cpp
-// BGR to Grayscale
+// BGR 转灰度
 cvtColor(src, dst, COLOR_BGR2GRAY);
 
-// BGR to HSV
+// BGR 转 HSV
 cvtColor(src, dst, COLOR_BGR2HSV);
 
-// BGR to Lab
+// BGR 转 Lab (适合颜色感知差异)
 cvtColor(src, dst, COLOR_BGR2Lab);
 
-// Split channels
+// 分割通道
 vector<Mat> bgr;
 split(src, bgr);
 
-// Merge channels
+// 合并通道
 merge(bgr, dst);
 ```
 
-### 3.5 Thresholding
+### 3.5 阈值分割
 
 ```cpp
 double thresh = 128;
 double maxVal = 255;
 
-// Simple threshold
+// 简单阈值
 threshold(src, dst, thresh, maxVal, THRESH_BINARY);
 
-// Otsu's method (auto)
+// Otsu 法 (自动计算阈值)
 threshold(src, dst, 0, maxVal, THRESH_BINARY | THRESH_OTSU);
 
-// Adaptive threshold
+// 自适应阈值 (适合不均匀照明)
 adaptiveThreshold(src, dst, maxVal, ADAPTIVE_THRESH_GAUSSIAN_C,
                    THRESH_BINARY, 11, 2);
 ```
 
-### 3.6 Edge Detection
+### 3.6 边缘检测
 
 ```cpp
-// Sobel
-Sobel(src, dst, CV_8U, 1, 0, 3);  // dx=1, dy=0, ksize=3
+Mat dst;
 
-// Laplacian (2nd derivative)
+// Sobel (梯度)
+Sobel(src, dst, CV_8U, 1, 0, 3);  // dx=1, dy=0, 卷积核=3
+
+// Laplacian (二阶导数)
 Laplacian(src, dst, CV_8U, 3);
 
-// Canny edge detector
-Canny(src, dst, 50, 150);  // low, high thresholds
+// Canny 边缘检测
+Canny(src, dst, 50, 150);  // 低阈值, 高阈值
 ```
 
 ---
 
-## 4. Implementation Analysis
+## 4.实现分析
 
-### 4.1 Gaussian Blur Algorithm
-
-```
-1. Create 1D Gaussian kernel
-2. Separable convolution:
-   - Convolve rows with 1D kernel
-   - Convolve result with transposed kernel
-3. Complexity: O(w*h*ksize) vs O(w*h*ksize²) for 2D
-```
-
-### 4.2 Canny Edge Detection Steps
+### 4.1 高斯模糊算法
 
 ```
-1. Gaussian smoothing
-2. Gradient calculation (Sobel)
-3. Non-maximum suppression
-4. Double thresholding
-5. Edge tracking by hysteresis
+1. 创建 1D 高斯核
+2. 可分离卷积:
+   - 用 1D 核卷积行
+   - 用转置的核卷积结果
+3. 复杂度: O(w*h*ksize) vs O(w*h*ksize²) 2D 卷积
+```
+
+### 4.2 Canny 边缘检测步骤
+
+```
+1. 高斯平滑
+2. 梯度计算 (Sobel)
+3. 非极大值抑制
+4. 双阈值处理
+5. 边缘连接 (滞后阈值)
 ```
 
 ---
 
-## 5. Code Examples
+## 5.代码示例
 
-### 5.1 Basic Image Processing Pipeline
+### 5.1 基础图像处理流水线
 
 ```cpp
 #include <opencv2/imgproc.hpp>
@@ -230,95 +237,101 @@ int main() {
     Mat img = imread("photo.jpg");
     Mat gray, blurred, edges;
 
-    // Convert to grayscale
+    // 转换为灰度图
     cvtColor(img, gray, COLOR_BGR2GRAY);
 
-    // Apply Gaussian blur
+    // 应用高斯模糊
     GaussianBlur(gray, blurred, Size(5, 5), 1.5);
 
-    // Detect edges
+    // 边缘检测
     Canny(blurred, edges, 50, 150);
 
-    imshow("Original", img);
-    imshow("Edges", edges);
+    imshow("原图", img);
+    imshow("边缘", edges);
     waitKey(0);
 
     return 0;
 }
 ```
 
-### 5.2 Histogram Equalization
+### 5.2 直方图均衡化
 
 ```cpp
+// 直方图均衡化 - 增强对比度
 void equalizeImage(const Mat& src) {
     Mat gray, eq;
+
+    // 转灰度
     cvtColor(src, gray, COLOR_BGR2GRAY);
+
+    // 均衡化
     equalizeHist(gray, eq);
 
-    imshow("Original", gray);
-    imshow("Equalized", eq);
+    imshow("原图", gray);
+    imshow("均衡化", eq);
     waitKey(0);
 }
 ```
 
-### 5.3 Morphological Operations
+### 5.3 形态学操作
 
 ```cpp
+// 形态学操作处理二值图像
 void processWithMorphology(const Mat& src) {
     Mat binary, opened, closed;
 
-    // Threshold to binary
+    // 阈值化为二值图像
     threshold(src, binary, 127, 255, THRESH_BINARY);
 
-    // Create structuring element
+    // 创建结构元素
     Mat kernel = getStructuringElement(MORPH_RECT, Size(5, 5));
 
-    // Opening (removes noise)
+    // 开运算 (去噪)
     morphologyEx(binary, opened, MORPH_OPEN, kernel);
 
-    // Closing (fills holes)
+    // 闭运算 (填孔)
     morphologyEx(binary, closed, MORPH_CLOSE, kernel);
 
-    imshow("Original", src);
-    imshow("Opened", opened);
-    imshow("Closed", closed);
+    imshow("原图", src);
+    imshow("开运算", opened);
+    imshow("闭运算", closed);
     waitKey(0);
 }
 ```
 
 ---
 
-## 6. Exercises
+## 6.练习题
 
-### Basic Level
-1. Implement image resize with different interpolation methods
-2. Convert image to HSV and extract the Saturation channel
-3. Apply Otsu's thresholding to segment an image
+### 入门级
+1. 实现不同插值方法的图像缩放
+2. 将图像转换为 HSV 并提取饱和度通道
+3. 使用 Otsu 法进行图像阈值分割
 
-### Intermediate Level
-4. Implement a custom convolution filter (sharpen, emboss)
-5. Use morphological operations to remove noise from a binary image
-6. Find and draw contours on an image
+### 中级
+4. 实现自定义卷积滤波 (锐化、浮雕)
+5. 使用形态学操作去除二值图像中的噪声
+6. 查找并绘制图像轮廓
 
-### Advanced Level
-7. Implement a perspective transformation with manual homography
-8. Build an image stitching pipeline using imgproc functions
+### 高级
+7. 实现透视变换 (手动计算单应性)
+8. 构建使用 imgproc 函数的图像拼接流水线
 
 ---
 
-## 7. References
+## 7.参考资料
 
-| Resource | Link |
+| 资源 | 链接 |
 |----------|------|
-| Official Documentation | [imgproc module](https://docs.opencv.org/4.14.0/d7/da4/group__imgproc.html) |
-| resize Reference | [resize](https://docs.opencv.org/4.14.0/d4/d86/group__imgproc__filter.html#ga4d0a3e5d0ae5e42fb6d18de5b70f6f02) |
-| filter2D Reference | [filter2D](https://docs.opencv.org/4.14.0/d4/d86/group__imgproc__filter.html#gae67d2b4c1ae2ac9d3fef2c90029f3a62) |
-| Canny Reference | [Canny](https://docs.opencv.org/4.14.0/dd/d1a/group__imgproc__feature.html#ga04723e100754a3e6f8858d1ac53d0db5) |
+| 官方文档 | [imgproc 模块](https://docs.opencv.org/4.14.0/d7/da4/group__imgproc.html) |
+| resize 参考 | [resize](https://docs.opencv.org/4.14.0/d4/d86/group__imgproc__filter.html#ga4d0a3e5d0ae5e42fb6d18de5b70f6f02) |
+| filter2D 参考 | [filter2D](https://docs.opencv.org/4.14.0/d4/d86/group__imgproc__filter.html#gae67d2b4c1ae2ac9d3fef2c90029f3a62) |
+| Canny 参考 | [Canny](https://docs.opencv.org/4.14.0/dd/d1a/group__imgproc__feature.html#ga04723e100754a3e6f8858d1ac53d0db5) |
 
 ---
 
-## Update History
+## 更新历史
 
-| Date | Version | Changes |
+| 日期 | 版本 | 变更 |
 |------|---------|---------|
-| 2026-05-27 | 4.14.0-pre | Initial imgproc module documentation |
+| 2026-05-27 | 4.14.0-pre | 初始 imgproc 模块文档 |
